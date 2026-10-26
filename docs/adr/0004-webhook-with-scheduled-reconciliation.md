@@ -1,7 +1,7 @@
 # ADR-0004：Webhook 与定时校准双通道同步
 
 - 日期：2026-10-26
-- 状态：Proposed
+- 状态：Accepted
 
 ## 背景
 

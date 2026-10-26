@@ -1,7 +1,7 @@
 # ADR-0007：分离 GitHub API 编辑通道与 SSH 部署通道
 
 - 日期：2026-10-26
-- 状态：Proposed
+- 状态：Accepted
 
 ## 背景
 

@@ -1,0 +1,7 @@
+targets:
+  manual-export:
+    type: export
+    enabled: true
+    defaults:
+      mode: draft
+      trigger: auto
