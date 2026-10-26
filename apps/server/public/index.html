@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PushPost 管理</title>
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+<body>
+  <main>
+    <section id="login-panel" class="card narrow">
+      <h1>PushPost 管理</h1>
+      <form id="login-form">
+        <label>邮箱<input id="email" type="email" autocomplete="username" required></label>
+        <label>密码<input id="password" type="password" autocomplete="current-password" required></label>
+        <button type="submit">登录</button>
+      </form>
+    </section>
+    <section id="dashboard" hidden>
+      <header><h1>PushPost 管理</h1><div><a href="/admin/decap">内容编辑</a><button id="logout" class="secondary">退出</button></div></header>
+      <nav>
+        <button data-view="overview">总览</button><button data-view="articles">文章</button>
+        <button data-view="deployments">部署</button><button data-view="tasks">任务</button><button data-view="audit">审计</button>
+      </nav>
+      <div class="toolbar"><button id="sync">立即同步</button><button id="refresh" class="secondary">刷新</button><label id="task-filter-label" hidden>状态 <select id="task-filter"><option value="">全部</option><option>pending</option><option>running</option><option>succeeded</option><option>failed</option><option>manual_required</option><option>cancelled</option></select></label></div>
+      <p id="message" role="status"></p><div id="content" class="card"></div>
+    </section>
+  </main>
+  <script src="/admin/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "@pushpost/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx watch src/index.ts",
+    "decap": "decap-server"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/static": "^8.3.0",
+    "@pushpost/adapters": "0.1.0",
+    "@pushpost/core": "0.1.0",
+    "decap-cms": "^3.17.1",
+    "fastify": "^5.6.1"
+  },
+  "devDependencies": {
+    "decap-server": "^3.6.1"
+  }
+}
