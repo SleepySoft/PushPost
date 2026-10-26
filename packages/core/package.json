@@ -1,0 +1,18 @@
+{
+  "name": "@pushpost/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": "./dist/index.js", "./*": "./dist/*.js" },
+  "scripts": { "build": "tsc -b", "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "marked": "^16.4.1",
+    "sanitize-html": "^2.17.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": { "@types/sanitize-html": "^2.16.0" }
+}
