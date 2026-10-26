@@ -5,8 +5,9 @@
 ## 设计目标
 
 - 普通 Git 工具可以直接阅读和修改文章。
-- 分类来自目录，文章正文与私有资源可以一起移动。
-- 文章、分类和平台目标都有稳定标识，重命名不会丢失关联。
+- 每篇文章通常就是一个 Markdown 文件，不强制创建文章目录。
+- 分类完全来自目录，不维护分类 ID、分类注册表或额外展示配置。
+- 文章和平台目标有稳定标识，文章重命名不会丢失远端关联。
 - 每篇文章的元数据只保存一次，不在 Front Matter 和中央文件中双写。
 - Decap 与自研服务读取同一份配置，失败时给出可定位的校验错误。
 - Git 中不出现平台密钥、远端文章 ID、任务日志等运行数据。
@@ -17,48 +18,43 @@
 <content-repository>/
 ├── content/
 │   ├── technology/
-│   │   ├── docker-notes/
-│   │   │   ├── index.md
-│   │   │   └── assets/
-│   │   │       ├── cover.png
-│   │   │       └── network.png
-│   │   └── kubernetes-notes/
-│   │       └── index.md
+│   │   ├── docker-notes.md
+│   │   ├── kubernetes-notes.md
+│   │   └── assets/
+│   │       ├── docker-cover.png
+│   │       └── docker-network.png
 │   └── life/
-│       └── reading-2026/
-│           ├── index.md
-│           └── assets/
-│               └── cover.jpg
+│       ├── reading-2026.md
+│       └── assets/
+│           └── reading-cover.jpg
 └── metadata/
     ├── pushpost.yml
-    ├── categories.yml
     ├── platforms.yml
     └── redirects.yml
 ```
 
 ### 规则
 
-1. `content/<category>/<article>/index.md` 是唯一采用的文章形态。
+1. 文章采用 `content/<category>/<article>.md`，一篇文章通常就是一个文件。
 2. v1 的 `<category>` 只有一级，不支持多级分类目录；跨分类检索使用标签。
-3. 每篇文章一个目录，正文固定命名为 `index.md`，避免正文和图片分离。
-4. 文章图片放在该目录的 `assets/` 中，正文和 Front Matter 使用 `./assets/...` 相对路径。
-5. 文章目录名是人类可读标识，但不是文章 ID，也不是公开 URL 的唯一依据。
-6. 分类必须登记在 `metadata/categories.yml`；未登记目录中的文章校验失败，不静默上线。
-7. `metadata/` 下不保存第二份文章正文或逐篇文章元数据。
-8. 首版不支持符号链接、Git 子模块、文章内容内的可执行脚本和绝对本地路径。
-9. 路径按不区分大小写的方式检查冲突，避免 Windows、macOS 和 Linux 行为不同。
-10. 非 `index.md` 的 Markdown、临时文件和编辑器备份文件不能被当作文章发布。
-
-暂不支持多篇文章共享媒体库。确有共享资源时，后续增加独立协议，不使用 `../../other-article/assets/...` 跨文章引用。
+3. `content/` 下每个一级目录就是一个分类，目录名直接作为分类展示名。
+4. 分类按目录名排序；分类页路由使用目录名的 URL 编码，不配置分类别名或 slug。
+5. 新增一级目录后，下次同步自动出现新分类，不需要修改中央 metadata。
+6. 每个分类下的 `assets/` 是保留资源目录，不作为文章扫描，文件名在该目录内唯一。
+7. 文章使用 `./assets/...` 引用同分类资源；不为单篇文章强制建立资源目录。
+8. `metadata/` 下不保存第二份文章正文、逐篇文章元数据或分类注册表。
+9. 首版不支持符号链接、Git 子模块、文章内容内的可执行脚本和绝对本地路径。
+10. 路径按不区分大小写的方式检查冲突，避免 Windows、macOS 和 Linux 行为不同。
+11. 分类根目录下直接包含的 `.md` 文件才是文章；`assets/`、临时文件和编辑器备份文件不能被当作文章发布。
 
 ## 职责划分
 
 | 数据 | 保存位置 | 原因 |
 | --- | --- | --- |
-| 正文、标签、摘要、生命周期 | 文章 `index.md` | 与文章一起评审和迁移 |
-| 文章图片 | 文章 `assets/` | 跟随文章移动和删除 |
+| 正文、标签、摘要、生命周期 | 文章 `<article>.md` | 与文章一起评审和迁移 |
+| 文章图片 | 所属分类的 `assets/` | 保持文章为单文件，按分类管理资源 |
+| 分类名称与分类归属 | 目录本身 | 机械映射，无需额外配置 |
 | 协议版本、站点默认区域设置 | `metadata/pushpost.yml` | 仓库级公共配置 |
-| 分类目录与展示信息 | `metadata/categories.yml` | 避免每篇文章重复分类配置 |
 | 平台目标的非敏感配置 | `metadata/platforms.yml` | 多篇文章复用目标账号 |
 | 历史 URL 重定向 | `metadata/redirects.yml` | URL 策略需要版本管理 |
 | 部署结果、任务状态、远端 ID/URL | PushPost 状态存储 | 属于运行结果，不是作者意图 |
@@ -83,39 +79,7 @@ site:
 
 仓库地址、发布分支、构建命令和部署目录属于服务端环境配置，不写在这里，避免内容编辑者改变部署目标。
 
-## `metadata/categories.yml`
-
-```yaml
-categories:
-  - id: technology
-    directory: technology
-    name: 技术
-    slug: tech
-    description: 技术与工程实践
-    order: 10
-    hidden: false
-  - id: life
-    directory: life
-    name: 生活
-    slug: life
-    description: 阅读与生活记录
-    order: 20
-    hidden: false
-```
-
-| 字段 | 必填 | 规则 |
-| --- | --- | --- |
-| `id` | 是 | 分类稳定 ID，全仓库唯一，重命名目录时保持不变 |
-| `directory` | 是 | `content/` 下的单级目录名，全仓库唯一 |
-| `name` | 是 | 展示名称 |
-| `slug` | 是 | 分类 URL 片段，全站唯一，不与其他路由冲突 |
-| `description` | 否 | 分类介绍和默认 SEO 描述 |
-| `order` | 否 | 非负整数，默认 `0`；同值时按名称排序 |
-| `hidden` | 否 | 默认 `false`；仅隐藏分类导航，不直接隐藏其中文章 |
-
-文章的分类由其父目录决定，不在 Front Matter 再写 `category`。移动文章到另一个已登记目录即完成改分类，文章 `id` 不变。
-
-`hidden: true` 不是访问控制。若分类内文章仍允许公开，知道 URL 的读者仍能访问。
+文章分类由父目录决定，不在 Front Matter 再写 `category`。移动到其他一级目录即改变分类，文章 `id` 不变。重命名分类目录会直接改变分类展示名和分类页地址；如需保留旧分类地址，应使用服务端重定向配置。
 
 ## `metadata/platforms.yml`
 
@@ -175,7 +139,7 @@ redirects:
 
 ### 完整示例
 
-`content/technology/docker-notes/index.md`：
+`content/technology/docker-notes.md`：
 
 ```markdown
 ---
@@ -189,7 +153,7 @@ lang: zh-CN
 tags:
   - docker
   - devops
-cover: ./assets/cover.png
+cover: ./assets/docker-cover.png
 canonical_url: null
 distribution:
   - target: wechat-main
@@ -200,7 +164,7 @@ distribution:
 
 正文从一级标题以下的内容开始，图片使用相对路径：
 
-![网络结构](./assets/network.png)
+![网络结构](./assets/docker-network.png)
 ```
 
 ### 字段定义
@@ -215,14 +179,15 @@ distribution:
 | `published_at` | 否 | RFC 3339 时间或 `null` | 立即/计划发布时间及声明的首次发布时间 |
 | `lang` | 否 | 字符串，继承站点默认值 | 文章语言 |
 | `tags` | 否 | 字符串数组，默认 `[]` | 跨分类标签，去重且忽略首尾空白 |
-| `cover` | 否 | 相对路径或 `null` | 封面，必须指向当前文章 `assets/` 内的已允许资源 |
+| `cover` | 否 | 相对路径或 `null` | 封面，必须指向所属分类 `assets/` 内的已允许资源 |
 | `canonical_url` | 否 | 绝对 HTTP(S) URL 或 `null` | 原文规范地址；空时由主站生成自身 canonical |
 | `distribution` | 否 | 目标配置数组，默认 `[]` | 外部分发意图，不包含执行结果 |
 
 ### 命名约束
 
-- `slug`、分类 `directory`、分类 `slug` 使用小写 ASCII 字母、数字和连字符，必须以字母或数字开头和结尾。
-- 平台目标别名使用同样的安全字符集。
+- 文章 `slug` 和平台目标别名使用小写 ASCII 字母、数字和连字符，必须以字母或数字开头和结尾。
+- 分类目录名允许 Unicode，直接用于展示；不能为 `.` 或 `..`，不能包含路径分隔符和控制字符。
+- 分类页地址对目录名进行 URL 编码，不额外生成或保存分类 slug。
 - `id` 不由路径计算，不在重命名时重新生成。
 - 标题和标签允许 Unicode；slug 不直接使用中文拼音自动覆盖作者已设置的值。
 - 所有数组禁止含义不明的重复项；`distribution` 中同一目标只能出现一次。
@@ -263,7 +228,7 @@ distribution:
 
 - v1 以 GFM 为基础；公式、MDX 和自定义短代码只有声明启用后才能使用。
 - 标题层级、摘要截断和平台转换规则由渲染器统一实现。
-- 图片路径必须是文章内相对路径，解析后不能越过文章目录。
+- 图片路径必须是指向所属分类 `assets/` 的相对路径，解析后不能越过该目录。
 - 图片必须实际存在，扩展名、MIME 和文件大小符合配置限制。
 - 首版允许常见静态图片；SVG、视频和附件需单独安全评审后启用。
 - 不允许正文或元数据引用 `file://`、本地绝对路径或仓库外文件。
@@ -273,9 +238,9 @@ distribution:
 
 每次候选构建必须在公开前完成全量结构校验：
 
-1. 四个仓库级 metadata 文件符合各自 schema，YAML 无重复键。
-2. 所有已发现文章都能关联到一个已登记分类。
-3. 文章 `id`、文章 `slug`、分类 `id`、分类 `directory` 和分类 `slug` 分别满足唯一性。
+1. 三个仓库级 metadata 文件符合各自 schema，YAML 无重复键。
+2. 文章必须位于合法一级分类目录中，嵌套目录和保留资源目录不能被识别为文章。
+3. 文章 `id` 和文章 `slug` 全仓库唯一，所有路径无不区分大小写的冲突。
 4. `status`、时间、路径和分发字段合法。
 5. `distribution.target` 存在且其适配器已注册。
 6. 封面、正文图片和重定向目标存在，路由无冲突或循环。
@@ -288,11 +253,11 @@ distribution:
 
 ### 新建
 
-Decap 或自研编辑器生成文章 ID 和目录，写入 `index.md`。`status` 默认 `draft`，`distribution` 默认空，避免创建文章即外发。
+Decap 或自研编辑器在选定分类中生成文章 ID 和 `<article>.md` 文件。`status` 默认 `draft`，`distribution` 默认空，避免创建文章即外发。
 
 ### 重命名或移动
 
-保持 `id` 不变。修改 slug 时同步添加重定向；移动分类目录只改变主分类。资源随文章目录整体移动，相对链接无需改写。
+保持 `id` 不变。修改 slug 时同步添加重定向；仅修改文件名不影响文章 URL。移动到其他分类时，如果文章仍需使用原分类资源，必须同时移动资源并更新相对路径，不做隐式资源复制。
 
 ### 删除
 
@@ -309,8 +274,8 @@ Git 删除文章表示从后续主站候选版本移除。数据库保留文章 
 1. 备份仓库并扫描目录、文章、资源和现有 metadata。
 2. 输出字段映射和异常报告，确认旧“发布”字段对应生命周期还是实际执行状态。
 3. 保留已有稳定 ID；没有 ID 的文章生成一次并写回。
-4. 将文章转换为文章目录 + `index.md`，资源移动到对应 `assets/` 并更新链接。
-5. 将文章级字段集中到 Front Matter，将分类和平台公共配置拆到中央文件。
+4. 保留单文件文章形态，将需要统一管理的资源移动到所属分类 `assets/` 并更新链接。
+5. 将文章级字段集中到 Front Matter，将平台公共配置拆到中央文件；目录本身即是分类，不生成分类配置。
 6. 旧中央文章 metadata 在迁移完成后退出读取路径，不保留长期双写。
 7. 冲突项阻断迁移，由人工选择；不按“新覆盖旧”或“旧覆盖新”隐式处理。
 8. 在测试分支完成全量校验和预览，再合并迁移提交。
@@ -319,12 +284,13 @@ Git 删除文章表示从后续主站候选版本移除。数据库保留文章 
 
 ## Decap 映射要求
 
-- 每个已登记分类对应一个 folder collection，`folder` 指向该分类目录。
-- 条目路径采用 `<article>/index` 形式，不能只生成散落的 `<article>.md`。
+- 每个分类目录对应一个 folder collection，`folder` 指向该分类目录。
+- 条目直接保存为 `<article>.md`，不创建文章子目录。
 - 新建条目的默认状态为 `draft`，ID 自动生成且编辑界面不可随意修改。
 - slug、标签、封面、发布时间和分发字段与本文 schema 一致。
-- 媒体保存到当前文章 `assets/`，插入相对路径。
-- 分类新增、协议字段变化和 Decap 配置更新必须在同一提交中完成。
+- 媒体保存到所属分类的 `assets/`，插入相对路径。
+- 主站新增分类不需要修改配置；若要通过 Decap 编辑该分类，再补充对应 collection。
+- 协议字段变化和 Decap 字段配置更新必须在同一提交中完成。
 - Decap 无法表达的校验仍由 Content Pipeline 执行；后台显示“可保存”不等于“可发布”。
 
-实现时需要用真实私有测试仓库验证 Decap 的嵌套 entry path 与媒体路径行为；若其媒体能力不能满足文章 bundle，优先增加受控定制，不改为把令牌或部署私钥暴露给浏览器。
+实现时需要用真实私有测试仓库验证 Decap 的分类 collection 与媒体路径行为；若媒体能力不能满足分类资源目录，优先增加受控定制，不改为把令牌或部署私钥暴露给浏览器。

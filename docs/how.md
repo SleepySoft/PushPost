@@ -52,17 +52,15 @@ Git / 其他客户端 ───────────▶ GitHub 私有仓库
 ```text
 content/
   <category>/
-    <article>/
-      index.md
-      assets/
+    <article>.md
+    assets/
 metadata/
   pushpost.yml
-  categories.yml
   platforms.yml
   redirects.yml
 ```
 
-文章 Front Matter 是文章级元数据的唯一保存位置，包括稳定 ID、标题、slug、生命周期、发布时间和分发意图。中央 metadata 只保存仓库默认值、分类、平台目标和重定向，不复制逐篇文章字段。平台凭据存放在服务端密钥存储中。
+文章 Front Matter 是文章级元数据的唯一保存位置，包括稳定 ID、标题、slug、生命周期、发布时间和分发意图。一级目录机械映射为分类，目录名直接用于展示，不维护分类注册表。中央 metadata 只保存仓库默认值、平台目标和重定向，不复制逐篇文章字段。平台凭据存放在服务端密钥存储中。
 
 完整目录、字段、状态和迁移规则见 [内容仓库与 Metadata 设计](content-repository.md)。校验器先识别 `schema_version`，再执行对应校验或拒绝不兼容内容，避免字段变更被静默误读。
 

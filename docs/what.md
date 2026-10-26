@@ -103,10 +103,11 @@
 
 完整协议见 [内容仓库与 Metadata 设计](content-repository.md)，核心约束如下：
 
-- 文章采用 `content/<category>/<article>/index.md`，私有资源保存在同目录 `assets/` 中。
-- v1 使用一级目录分类；文章通过稳定 `id` 关联部署和平台记录，路径与 slug 都不是永久身份。
+- 文章采用 `content/<category>/<article>.md`，资源保存在所属分类的 `assets/` 中，不强制创建文章目录。
+- v1 机械使用一级目录分类，目录名直接用于展示；不维护分类 ID、注册表或分类 metadata。
+- 文章通过稳定 `id` 关联部署和平台记录，路径与 slug 都不是永久身份。
 - `status` 限定为 `draft`、`published`、`archived`；`published_at` 支持立即发布和计划发布。
-- Front Matter 是文章级元数据的唯一保存位置，中央 metadata 只保存仓库、分类、平台目标和重定向配置。
+- Front Matter 是文章级元数据的唯一保存位置，中央 metadata 只保存仓库默认值、平台目标和重定向配置。
 - `distribution` 表示分发意图，不保存远端文章 ID、任务状态或错误日志。
 - 平台凭据只保存于服务端密钥存储，仓库内仅保存逻辑引用。
 - 现有 metadata 通过显式迁移进入协议，冲突必须人工处理，不长期双写或隐式合并。
