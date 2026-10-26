@@ -1,6 +1,6 @@
 # 内容仓库与 Metadata 设计
 
-本文定义 WebPub 内容仓库协议 v1。这里描述的是**文章仓库**，不是 WebPub 应用自身的代码目录。当前状态为 Proposed；现有仓库通过显式迁移进入该协议。
+本文定义 PushPost 内容仓库协议 v1。这里描述的是**文章仓库**，不是 PushPost 应用自身的代码目录。当前状态为 Proposed；现有仓库通过显式迁移进入该协议。
 
 ## 设计目标
 
@@ -30,7 +30,7 @@
 │           └── assets/
 │               └── cover.jpg
 └── metadata/
-    ├── webpub.yml
+    ├── pushpost.yml
     ├── categories.yml
     ├── platforms.yml
     └── redirects.yml
@@ -57,14 +57,14 @@
 | --- | --- | --- |
 | 正文、标签、摘要、生命周期 | 文章 `index.md` | 与文章一起评审和迁移 |
 | 文章图片 | 文章 `assets/` | 跟随文章移动和删除 |
-| 协议版本、站点默认区域设置 | `metadata/webpub.yml` | 仓库级公共配置 |
+| 协议版本、站点默认区域设置 | `metadata/pushpost.yml` | 仓库级公共配置 |
 | 分类目录与展示信息 | `metadata/categories.yml` | 避免每篇文章重复分类配置 |
 | 平台目标的非敏感配置 | `metadata/platforms.yml` | 多篇文章复用目标账号 |
 | 历史 URL 重定向 | `metadata/redirects.yml` | URL 策略需要版本管理 |
-| 部署结果、任务状态、远端 ID/URL | WebPub 状态存储 | 属于运行结果，不是作者意图 |
+| 部署结果、任务状态、远端 ID/URL | PushPost 状态存储 | 属于运行结果，不是作者意图 |
 | 令牌、私钥、Cookie | 服务端密钥存储 | 防止进入 Git 历史 |
 
-## `metadata/webpub.yml`
+## `metadata/pushpost.yml`
 
 仓库协议入口和默认值：
 
@@ -126,14 +126,14 @@ targets:
   wechat-main:
     type: wechat
     enabled: true
-    credential_ref: webpub/wechat-main
+    credential_ref: pushpost/wechat-main
     defaults:
       mode: draft
       trigger: auto
   wordpress-main:
     type: wordpress
     enabled: true
-    credential_ref: webpub/wordpress-main
+    credential_ref: pushpost/wordpress-main
     defaults:
       mode: published
       trigger: manual

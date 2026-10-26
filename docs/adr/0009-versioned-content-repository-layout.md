@@ -13,7 +13,7 @@
 
 - 使用 `content/<category>/<article>/index.md`，每篇文章一个目录，资源保存在该目录 `assets/` 中。
 - v1 分类为一级目录，文章主分类由目录决定，不重复保存 category 字段。
-- `metadata/webpub.yml` 保存协议版本和站点默认值。
+- `metadata/pushpost.yml` 保存协议版本和站点默认值。
 - `metadata/categories.yml` 保存分类稳定 ID、目录和展示配置。
 - `metadata/platforms.yml` 保存平台目标的非敏感配置与默认值。
 - `metadata/redirects.yml` 保存到文章稳定 ID 的历史路径重定向。

@@ -56,7 +56,7 @@ content/
       index.md
       assets/
 metadata/
-  webpub.yml
+  pushpost.yml
   categories.yml
   platforms.yml
   redirects.yml
