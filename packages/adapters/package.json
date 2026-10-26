@@ -1,0 +1,15 @@
+{
+  "name": "@pushpost/adapters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": "./dist/index.js", "./*": "./dist/*.js" },
+  "scripts": { "build": "tsc -b", "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "@pushpost/core": "0.1.0",
+    "adm-zip": "^0.5.16"
+  },
+  "devDependencies": { "@types/adm-zip": "^0.5.7" }
+}

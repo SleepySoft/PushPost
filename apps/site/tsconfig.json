@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": { "@pushpost/core": ["../../packages/core/src/types.ts"] }
+  },
+  "include": [".astro/types.d.ts", "src/**/*", "astro.config.mts"],
+  "exclude": ["dist"]
+}

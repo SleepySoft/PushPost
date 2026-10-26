@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { resolveArticleAssetUrls } from '../../article-html';
+import {
+  absoluteUrl,
+  categoryPath,
+  decodeRouteParam,
+  formatDate,
+  getSiteData,
+  postPath,
+  tagPath,
+} from '../../snapshot';
+
+export function getStaticPaths() {
+  const { articles } = getSiteData();
+  return articles.map((article) => ({ params: { slug: encodeURIComponent(article.slug) } }));
+}
+
+const { snapshot, articles } = getSiteData();
+const slug = decodeRouteParam(Astro.params.slug);
+const article = articles.find((item) => item.slug === slug);
+if (!article) throw new Error(`找不到已发布文章：${slug}`);
+const canonical = article.canonicalUrl || absoluteUrl(postPath(article), snapshot.siteUrl);
+const html = resolveArticleAssetUrls(article.html, article.category);
+---
+<BaseLayout title={article.title} description={article.summary} canonical={canonical} lang={article.lang}>
+  <article>
+    <header>
+      <h1>{article.title}</h1>
+      <div class="article-meta">
+        {article.publishedAt && (
+          <time datetime={article.publishedAt}>
+            {formatDate(article.publishedAt, article.lang || snapshot.settings.defaultLang, snapshot.settings.timezone)}
+          </time>
+        )}
+        {' · '}<a href={categoryPath(article.category)}>{article.category}</a>
+      </div>
+      {article.tags.length > 0 && (
+        <ul class="taxonomy" aria-label="文章标签">
+          {article.tags.map((tag) => <li><a href={tagPath(tag)}>#{tag}</a></li>)}
+        </ul>
+      )}
+    </header>
+    <div class="article-body" set:html={html} />
+  </article>
+</BaseLayout>

@@ -1,0 +1,19 @@
+---
+import ArticleList from '../../components/ArticleList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { decodeRouteParam, getSiteData } from '../../snapshot';
+
+export function getStaticPaths() {
+  const { articles } = getSiteData();
+  const tags = new Set(articles.flatMap((article) => article.tags));
+  return [...tags].map((tag) => ({ params: { tag: encodeURIComponent(tag) } }));
+}
+
+const { articles } = getSiteData();
+const tag = decodeRouteParam(Astro.params.tag);
+const taggedArticles = articles.filter((article) => article.tags.includes(tag));
+---
+<BaseLayout title={`标签：${tag}`} description={`标签 ${tag} 下的文章`}>
+  <h1>标签：{tag}</h1>
+  <ArticleList articles={taggedArticles} />
+</BaseLayout>

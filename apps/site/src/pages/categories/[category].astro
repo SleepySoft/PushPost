@@ -1,0 +1,19 @@
+---
+import ArticleList from '../../components/ArticleList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { decodeRouteParam, getSiteData } from '../../snapshot';
+
+export function getStaticPaths() {
+  const { articles } = getSiteData();
+  const categories = new Set(articles.map((article) => article.category));
+  return [...categories].map((category) => ({ params: { category: encodeURIComponent(category) } }));
+}
+
+const { articles } = getSiteData();
+const category = decodeRouteParam(Astro.params.category);
+const categoryArticles = articles.filter((article) => article.category === category);
+---
+<BaseLayout title={`分类：${category}`} description={`分类 ${category} 下的文章`}>
+  <h1>分类：{category}</h1>
+  <ArticleList articles={categoryArticles} />
+</BaseLayout>

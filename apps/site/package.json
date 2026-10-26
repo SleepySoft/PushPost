@@ -1,0 +1,12 @@
+{
+  "name": "@pushpost/site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "astro build", "typecheck": "astro check", "dev": "astro dev" },
+  "dependencies": {
+    "@pushpost/core": "0.1.0",
+    "astro": "^5.15.3"
+  },
+  "devDependencies": { "@astrojs/check": "^0.9.4", "@types/node": "^20.19.0" }
+}

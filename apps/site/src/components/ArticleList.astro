@@ -1,0 +1,32 @@
+---
+import type { Article } from '@pushpost/core';
+import { categoryPath, formatDate, getSiteData, postPath } from '../snapshot';
+
+interface Props {
+  articles: Article[];
+  emptyMessage?: string;
+}
+
+const { articles, emptyMessage = '暂无已发布文章。' } = Astro.props;
+const { snapshot } = getSiteData();
+---
+{articles.length === 0 ? (
+  <p class="empty">{emptyMessage}</p>
+) : (
+  <ul class="article-list">
+    {articles.map((article) => (
+      <li>
+        <h2><a href={postPath(article)}>{article.title}</a></h2>
+        {article.publishedAt && (
+          <div class="article-meta">
+            <time datetime={article.publishedAt}>
+              {formatDate(article.publishedAt, article.lang || snapshot.settings.defaultLang, snapshot.settings.timezone)}
+            </time>
+            {' · '}<a href={categoryPath(article.category)}>{article.category}</a>
+          </div>
+        )}
+        <p>{article.summary}</p>
+      </li>
+    ))}
+  </ul>
+)}

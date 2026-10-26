@@ -1,0 +1,44 @@
+---
+import { absoluteUrl, getSiteData } from '../snapshot';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  lang?: string;
+}
+
+const { snapshot } = getSiteData();
+const {
+  title,
+  description = snapshot.siteTitle,
+  canonical = absoluteUrl(Astro.url.pathname, snapshot.siteUrl),
+  lang = snapshot.settings.defaultLang,
+} = Astro.props;
+const fullTitle = title === snapshot.siteTitle ? title : `${title} | ${snapshot.siteTitle}`;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={snapshot.siteTitle} href={absoluteUrl('/rss.xml', snapshot.siteUrl)} />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav aria-label="主导航">
+        <a class="site-title" href="/">{snapshot.siteTitle}</a>
+        <a href="/archive/">归档</a>
+        <a href="/rss.xml">RSS</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">由 PushPost 发布</footer>
+  </body>
+</html>

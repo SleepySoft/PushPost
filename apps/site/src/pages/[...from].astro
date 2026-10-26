@@ -1,0 +1,49 @@
+---
+import { absoluteUrl, getSiteData, postPath } from '../snapshot';
+
+export function getStaticPaths() {
+  const { snapshot, articles } = getSiteData();
+  return snapshot.redirects.flatMap((redirect) => {
+    const article = articles.find((item) => item.id === redirect.articleId);
+    if (!article || !redirect.from.startsWith('/') || redirect.from.startsWith('//')) return [];
+    if (/[?#\\]/.test(redirect.from)) return [];
+    const from = redirect.from.replace(/^\/+|\/+$/g, '');
+    if (!from) return [];
+    return [{
+      params: { from },
+      props: {
+        target: postPath(article),
+        title: article.title,
+        lang: article.lang || snapshot.settings.defaultLang,
+      },
+    }];
+  });
+}
+
+interface Props {
+  target: string;
+  title: string;
+  lang: string;
+}
+
+const { snapshot } = getSiteData();
+const { target, title, lang } = Astro.props;
+const canonical = absoluteUrl(target, snapshot.siteUrl);
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={canonical} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <title>页面已移动 | {snapshot.siteTitle}</title>
+  </head>
+  <body>
+    <main>
+      <h1>页面已移动</h1>
+      <p><a href={target}>继续阅读：{title}</a></p>
+    </main>
+  </body>
+</html>

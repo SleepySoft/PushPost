@@ -1,0 +1,32 @@
+---
+import ArticleList from '../components/ArticleList.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categoryPath, getSiteData, tagPath } from '../snapshot';
+
+const { snapshot, articles } = getSiteData();
+const categories = [...new Set(articles.map((article) => article.category))].sort();
+const tags = [...new Set(articles.flatMap((article) => article.tags))].sort();
+---
+<BaseLayout title={snapshot.siteTitle}>
+  <h1>{snapshot.siteTitle}</h1>
+  {categories.length > 0 && (
+    <section aria-labelledby="categories-title">
+      <h2 id="categories-title">分类</h2>
+      <ul class="taxonomy">
+        {categories.map((category) => <li><a href={categoryPath(category)}>{category}</a></li>)}
+      </ul>
+    </section>
+  )}
+  {tags.length > 0 && (
+    <section aria-labelledby="tags-title">
+      <h2 id="tags-title">标签</h2>
+      <ul class="taxonomy">
+        {tags.map((tag) => <li><a href={tagPath(tag)}>{tag}</a></li>)}
+      </ul>
+    </section>
+  )}
+  <section aria-labelledby="latest-title">
+    <h2 id="latest-title">最新文章</h2>
+    <ArticleList articles={articles} emptyMessage="当前为空站，暂无文章。设置 PUSHPOST_SNAPSHOT 后可根据真实快照构建。" />
+  </section>
+</BaseLayout>

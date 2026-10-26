@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate, getSiteData, postPath } from '../snapshot';
+
+const { snapshot, articles } = getSiteData();
+const years = new Map<string, typeof articles>();
+for (const article of articles) {
+  const year = article.publishedAt!.slice(0, 4);
+  years.set(year, [...(years.get(year) || []), article]);
+}
+---
+<BaseLayout title="文章归档" description="按发布时间浏览全部文章">
+  <h1>文章归档</h1>
+  {years.size === 0 ? <p class="empty">暂无已发布文章。</p> : (
+    [...years.entries()].map(([year, yearArticles]) => (
+      <section>
+        <h2>{year}</h2>
+        <ul>
+          {yearArticles.map((article) => (
+            <li>
+              <time datetime={article.publishedAt!}>
+                {formatDate(article.publishedAt!, article.lang || snapshot.settings.defaultLang, snapshot.settings.timezone)}
+              </time>
+              {' '}<a href={postPath(article)}>{article.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  )}
+</BaseLayout>
